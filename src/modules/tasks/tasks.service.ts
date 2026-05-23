@@ -1,52 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Task } from './tasks.schema';
 
 @Injectable()
 export class TasksService {
-     tasks = [
-            {
-                id: '1',
-                title: "Estudar node",
-                finished: true,
-            },
-            {
-                id: '2',
-                title: "Estudar Java",
-                finished: true,
-            },
-            {
-                id: '3',
-                title: "Estudar Python",
-                finished: true,
-            },
-            {
-                id: '4',
-                title: "Dormir",
-                finished: true,
-            },
-            {
-                id: '5',
-                title: "Acordar",
-                finished: true,
-            }
-        ];
+
+    constructor(
+    @InjectModel(Task.name)
+    private readonly taskModel: Model<Task>,
+  ) {}
     
     public findAll(){
-        return this.tasks;
+        return this.taskModel.find();
     }
 
     public findById(id: string){
-        const t = this.tasks.filter(task=> task.id == id)
-        return t;
+        return this.taskModel.findById(id);
     }
 
     public createTask(data: any){
-        this.tasks.push(data);
-        return data;
+        return this.taskModel.create(data);
     }
 
     public update(data: any,id:string){
-        this.tasks.map(task=> task.id == id?{data}:task);
+       return this.taskModel.findByIdAndUpdate(id, data, { new: true });
+    }
 
-        return this.tasks.filter(task=> task.id == id);
+    public delete(id: string){
+        return this.taskModel.findByIdAndDelete(id);
     }
 }
